@@ -1,6 +1,60 @@
 <template>
   <div class="app-container">
-    <!-- 引擎状态卡片 -->
+    <!-- 账户统计 -->
+    <el-card shadow="hover" style="margin-bottom:20px">
+      <div slot="header"><span>账户统计</span></div>
+      <el-row :gutter="20">
+        <el-col :span="6">
+          <div style="text-align:center;padding:15px 0">
+            <div style="font-size:12px;color:#999">用户总余额</div>
+            <div style="font-size:24px;font-weight:bold;margin-top:8px">{{ (statsData.initUsdt || 0).toFixed(2) }}</div>
+          </div>
+        </el-col>
+        <el-col :span="6">
+          <div style="text-align:center;padding:15px 0">
+            <div style="font-size:12px;color:#999">近30天充提</div>
+            <div style="font-size:24px;font-weight:bold;margin-top:8px">{{ (statsData.charge || 0).toFixed(4) }}</div>
+          </div>
+        </el-col>
+        <el-col :span="6">
+          <div style="text-align:center;padding:15px 0">
+            <div style="font-size:12px;color:#999">最新净值</div>
+            <div style="font-size:24px;font-weight:bold;margin-top:8px">{{ (statsData.currentUsdt || 0).toFixed(4) }}</div>
+          </div>
+        </el-col>
+        <el-col :span="6">
+          <div style="text-align:center;padding:15px 0">
+            <div style="font-size:12px;color:#999">累计收益</div>
+            <div :style="{fontSize:'20px',fontWeight:'bold',marginTop:'8px',color:(statsData.totalProfit||0) >= 0 ? '#00A346' : '#C03639'}">{{ (statsData.totalProfit || 0).toFixed(4) }}</div>
+            <div style="font-size:12px;color:#999;margin-top:4px">{{ ((statsData.totalProfitFloat || 0) * 100).toFixed(2) }}% 累计年化</div>
+          </div>
+        </el-col>
+      </el-row>
+      <el-row :gutter="20">
+        <el-col :span="6">
+          <div style="text-align:center;padding:15px 0">
+            <div style="font-size:12px;color:#999">7天收益</div>
+            <div :style="{fontSize:'20px',fontWeight:'bold',marginTop:'8px',color:(statsData.days7Profit||0) >= 0 ? '#00A346' : '#C03639'}">{{ (statsData.days7Profit || 0).toFixed(4) }}</div>
+            <div style="font-size:12px;margin-top:4px">
+              <span :style="{color: (statsData.days7ProfitFloat || 0) >= 0 ? '#00A346' : '#C03639'}">{{ ((statsData.days7ProfitFloat || 0) * 100).toFixed(2) }}%</span>
+              <span style="color:#999"> 7日年化</span>
+            </div>
+          </div>
+        </el-col>
+        <el-col :span="6">
+          <div style="text-align:center;padding:15px 0">
+            <div style="font-size:12px;color:#999">30天收益</div>
+            <div :style="{fontSize:'20px',fontWeight:'bold',marginTop:'8px',color:(statsData.days30Profit||0) >= 0 ? '#00A346' : '#C03639'}">{{ (statsData.days30Profit || 0).toFixed(4) }}</div>
+            <div style="font-size:12px;margin-top:4px">
+              <span :style="{color: (statsData.days30ProfitFloat || 0) >= 0 ? '#00A346' : '#C03639'}">{{ ((statsData.days30ProfitFloat || 0) * 100).toFixed(2) }}%</span>
+              <span style="color:#999"> 30日年化</span>
+            </div>
+          </div>
+        </el-col>
+      </el-row>
+    </el-card>
+
+    <!-- 引擎状态 -->
     <el-row :gutter="20" style="margin-bottom:20px">
       <el-col :span="6">
         <el-card shadow="hover">
@@ -37,7 +91,7 @@
       </el-col>
     </el-row>
 
-    <!-- 策略列表 -->
+    <!-- 策略配置 -->
     <el-card shadow="hover" style="margin-bottom:20px">
       <div slot="header"><span>策略配置</span></div>
       <el-table v-loading="loadingStrategy" :data="strategyList" border>
@@ -91,93 +145,58 @@
     <el-card shadow="hover" style="margin-bottom:20px">
       <div slot="header"><span>当前仓位</span></div>
       <el-table v-loading="loadingPosition" :data="positionList" border>
-        <el-table-column label="交易对" prop="symbol" min-width="140" />
-        <el-table-column label="方向" prop="positionSide" width="100">
+        <el-table-column label="交易对" prop="pair" width="160" />
+        <el-table-column label="类型" prop="legType" width="60" />
+        <el-table-column label="Exchange" prop="exchange" width="120" />
+        <el-table-column label="Symbol" prop="symbol" min-width="130" />
+        <el-table-column label="Position Type" prop="positionSide" width="120">
           <template slot-scope="scope">
             <el-tag :type="scope.row.positionSide === 'BUY' || scope.row.positionSide === 'LONG' ? 'danger' : 'success'" size="small">
               {{ scope.row.positionSide }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="数量" prop="quantity" width="120" />
-        <el-table-column label="开仓价" prop="openPrice" width="120" />
-        <el-table-column label="当前价" prop="currenPrice" width="120" />
-        <el-table-column label="杠杆" prop="leverage" width="80" />
+        <el-table-column label="Quantity" prop="quantity" width="120" />
+        <el-table-column label="Open Price" prop="openPrice" width="120" />
+        <el-table-column label="Curren Price" prop="currenPrice" width="120" />
+        <el-table-column label="Estimated Liquidation Price" prop="liquidationPrice" width="180" />
+        <el-table-column label="ADL" prop="adl" width="70" />
+        <el-table-column label="Leverage" prop="leverage" width="80" />
+        <el-table-column label="Position Value" prop="positionValue" width="130" />
       </el-table>
     </el-card>
 
-    <!-- 账户统计 -->
+    <!-- 日收益 -->
     <el-card shadow="hover" style="margin-bottom:20px">
-      <div slot="header"><span>账户统计</span></div>
-      <el-row :gutter="20">
-        <el-col :span="6">
-          <div style="text-align:center;padding:15px 0">
-            <div style="font-size:12px;color:#999">用户总余额</div>
-            <div style="font-size:24px;font-weight:bold;margin-top:8px">{{ (statsData.initUsdt || 0).toFixed(2) }}</div>
-          </div>
-        </el-col>
-        <el-col :span="6">
-          <div style="text-align:center;padding:15px 0">
-            <div style="font-size:12px;color:#999">近30天充提</div>
-            <div style="font-size:24px;font-weight:bold;margin-top:8px">{{ (statsData.charge || 0).toFixed(4) }}</div>
-          </div>
-        </el-col>
-        <el-col :span="6">
-          <div style="text-align:center;padding:15px 0">
-            <div style="font-size:12px;color:#999">最新净值</div>
-            <div style="font-size:24px;font-weight:bold;margin-top:8px">{{ (statsData.currentUsdt || 0).toFixed(4) }}</div>
-          </div>
-        </el-col>
-        <el-col :span="6">
-          <div style="text-align:center;padding:15px 0">
-            <div style="font-size:12px;color:#999">累计收益</div>
-            <div style="font-size:20px;font-weight:bold;margin-top:8px;color:#00A346">{{ (statsData.totalProfit || 0).toFixed(4) }}</div>
-            <div style="font-size:12px;color:#999;margin-top:4px">{{ ((statsData.totalProfitFloat || 0) * 100).toFixed(2) }}% 累计年化</div>
-          </div>
-        </el-col>
-      </el-row>
-      <el-row :gutter="20">
-        <el-col :span="6">
-          <div style="text-align:center;padding:15px 0">
-            <div style="font-size:12px;color:#999">7天收益</div>
-            <div style="font-size:20px;font-weight:bold;margin-top:8px">{{ (statsData.days7Profit || 0).toFixed(4) }}</div>
-            <div style="font-size:12px;margin-top:4px">
-              <span :style="{color: (statsData.days7ProfitFloat || 0) >= 0 ? '#00A346' : '#C03639'}">{{ ((statsData.days7ProfitFloat || 0) * 100).toFixed(2) }}%</span>
-              <span style="color:#999"> 7日年化</span>
-            </div>
-          </div>
-        </el-col>
-        <el-col :span="6">
-          <div style="text-align:center;padding:15px 0">
-            <div style="font-size:12px;color:#999">30天收益</div>
-            <div style="font-size:20px;font-weight:bold;margin-top:8px">{{ (statsData.days30Profit || 0).toFixed(4) }}</div>
-            <div style="font-size:12px;margin-top:4px">
-              <span :style="{color: (statsData.days30ProfitFloat || 0) >= 0 ? '#00A346' : '#C03639'}">{{ ((statsData.days30ProfitFloat || 0) * 100).toFixed(2) }}%</span>
-              <span style="color:#999"> 30日年化</span>
-            </div>
-          </div>
-        </el-col>
-      </el-row>
-    </el-card>
-
-    <!-- 最近收益 -->
-    <el-card shadow="hover">
-      <div slot="header"><span>收益明细</span></div>
-      <el-table v-loading="loadingRevenue" :data="revenueList" border>
-        <el-table-column label="日期" prop="dataTime" width="120" />
-        <el-table-column label="收益(USDT)" prop="profit" width="120">
+      <div slot="header"><span>日收益</span></div>
+      <el-table v-loading="loadingRevenue" :data="revenueList" border style="width:100%">
+        <el-table-column label="Alias" prop="alias" min-width="120" />
+        <el-table-column label="Date" prop="date" min-width="100" />
+        <el-table-column label="Equity" prop="equity" min-width="100">
+          <template slot-scope="scope">{{ scope.row.equity.toFixed(2) }}</template>
+        </el-table-column>
+        <el-table-column label="Nav" prop="nav" min-width="80">
+          <template slot-scope="scope">{{ scope.row.nav.toFixed(4) }}</template>
+        </el-table-column>
+        <el-table-column label="Pnl" prop="pnl" min-width="100">
           <template slot-scope="scope">
-            <span :style="{color: parseFloat(scope.row.profit) >= 0 ? '#00A346' : '#C03639'}">
-              {{ parseFloat(scope.row.profit).toFixed(2) }}
+            <span :style="{color: scope.row.pnl >= 0 ? '#00A346' : '#C03639'}">
+              {{ scope.row.pnl.toFixed(2) }}
             </span>
           </template>
         </el-table-column>
-        <el-table-column label="记录时间" prop="createTime" min-width="160">
-          <template slot-scope="scope">{{ parseTime(scope.row.createTime) }}</template>
+        <el-table-column label="Yield" prop="yield" min-width="80">
+          <template slot-scope="scope">
+            <span :style="{color: scope.row.yieldPct >= 0 ? '#00A346' : '#C03639'}">
+              {{ scope.row.yieldPct.toFixed(2) }}%
+            </span>
+          </template>
         </el-table-column>
       </el-table>
-      <pagination v-show="revenueTotal > 0" :total="revenueTotal" :page.sync="revenuePage" :limit.sync="revenuePageSize" @pagination="loadRevenue" :autoScroll="false" />
     </el-card>
+
+    <!-- 充提记录 -->
+    <charge-history :account-id="accountId" />
   </div>
 </template>
 
@@ -185,16 +204,20 @@
 import { listStrategyInfo } from "@/api/strategy/strategyInfo";
 import { updateStrategyInfo } from "@/api/strategy/strategyInfo";
 import { listStrageyPositionByStrategy } from "@/api/strategy/strageyPositionInfo";
-import { listRevenueDetail } from "@/api/strategy/revenueDetail";
+import { getRevenueCurveData } from "@/api/strategy/revenueCurve";
 import { getArbStatistics } from "@/api/strategy/statisticsAccount";
+import { getUserPlatform } from "@/api/strategy/userPlatform";
+import ChargeHistory from "@/views/home/ChargeHistory";
 
 export default {
   name: "Arbitrage",
+  components: {
+    ChargeHistory
+  },
   data() {
     return {
       engineOnline: true,
       activeCount: 0,
-      trackedPairs: 'BTCDOM/ETH',
       cumulativePnl: 0,
       // 策略
       loadingStrategy: false,
@@ -202,14 +225,13 @@ export default {
       // 仓位
       loadingPosition: false,
       positionList: [],
+      _rawPositionList: null,
       // 统计
       statsData: {},
       // 收益
       loadingRevenue: false,
       revenueList: [],
-      revenueTotal: 0,
-      revenuePage: 1,
-      revenuePageSize: 10,
+      accountAlias: '',
       accountId: 8,
       // 修改杠杆弹窗
       dialogLeverageVisible: false,
@@ -223,10 +245,24 @@ export default {
     if (lastPart && /^\d+$/.test(lastPart)) {
       this.accountId = parseInt(lastPart);
     }
+    this.loadStats();
     this.loadStrategyList();
     this.loadPositionList();
     this.loadRevenue();
-    this.loadStats();
+    // 每30秒自动刷新
+    this._timer = setInterval(() => {
+      this.loadPositionList();
+      this.loadRevenue();
+      this.loadStats();
+    }, 30000);
+  },
+  computed: {
+    trackedPairs() {
+      return this.strategyList.map(s => `${s.symbol1}/${s.symbol2}`).join(', ') || '—';
+    }
+  },
+  beforeDestroy() {
+    clearInterval(this._timer);
   },
   methods: {
     loadStrategyList() {
@@ -235,25 +271,69 @@ export default {
         this.strategyList = (res.rows || []).filter(s => s.strategyStatus === 1);
         this.activeCount = this.strategyList.length;
         this.loadingStrategy = false;
+        this.enrichPositionList();
       }).catch(() => { this.loadingStrategy = false; });
     },
     loadPositionList() {
       this.loadingPosition = true;
       listStrageyPositionByStrategy({ apiAccountId: this.accountId }).then(res => {
-        // 只显示套利引擎的仓位（exchange=arb_binance）
-        this.positionList = (res.rows || []).filter(p => p.exchange === 'arb_binance');
+        this._rawPositionList = (res.rows || []).filter(p => p.exchange === 'arb_binance');
+        this.enrichPositionList();
         this.loadingPosition = false;
       }).catch(() => { this.loadingPosition = false; });
     },
+    enrichPositionList() {
+      if (!this._rawPositionList) return;
+      const map = {};
+      (this.strategyList || []).forEach(s => {
+        const s1 = (s.symbol1 || '').toUpperCase().replace('USDT', '');
+        const s2 = (s.symbol2 || '').toUpperCase().replace('USDT', '');
+        // symbol_1 是现货腿，symbol_2 是合约腿
+        map[s1 + 'USDT'] = { pair: `${s.symbol1}/${s.symbol2}`, legType: '现货' };
+        map[s2 + 'USDT'] = { pair: `${s.symbol1}/${s.symbol2}`, legType: '合约' };
+      });
+      this.positionList = this._rawPositionList.map(p => {
+        const info = map[p.symbol] || {};
+        return { ...p, pair: info.pair || '—', legType: info.legType || '—' };
+      });
+    },
     loadRevenue() {
       this.loadingRevenue = true;
-      listRevenueDetail({
-        pageNum: this.revenuePage,
-        pageSize: this.revenuePageSize,
-        apiAccountId: this.accountId
-      }).then(res => {
-        this.revenueList = res.rows || [];
-        this.revenueTotal = res.total || 0;
+      // 获取账户别名
+      getUserPlatform(this.accountId).then(platRes => {
+        this.accountAlias = (platRes.data && platRes.data.name) || '未知';
+      }).catch(() => {});
+      // 获取每日净值曲线
+      getRevenueCurveData(this.accountId).then(res => {
+        if (res.code === 200 && res.data) {
+          const dates = res.data.datas || [];
+          const values = res.data.data || [];
+          const list = [];
+          let prevValue = null;
+          // 从最早到最新遍历，计算每天相对前一天的 PnL
+          for (let i = 0; i < dates.length; i++) {
+            const date = dates[i];
+            const value = parseFloat(values[i]) || 0;
+            const pnl = prevValue !== null ? parseFloat((value - prevValue).toFixed(2)) : 0;
+            const yieldPct = prevValue && prevValue > 0 ? parseFloat(((value - prevValue) / prevValue * 100).toFixed(2)) : 0;
+            const nav = this.statsData.initUsdt && this.statsData.initUsdt > 0
+              ? value / this.statsData.initUsdt : 1;
+            list.push({
+              alias: this.accountAlias,
+              date: date,
+              equity: value,
+              nav: nav,
+              pnl: pnl,
+              yieldPct: yieldPct
+            });
+            prevValue = value;
+          }
+          // 倒序，最新日期在最上面
+          list.reverse();
+          // 过滤掉当天（北京时间未过0点不显示当天收益）
+          const todayStr = this.getBeijingDateStr();
+          this.revenueList = list.filter(item => item.date !== todayStr);
+        }
         this.loadingRevenue = false;
       }).catch(() => { this.loadingRevenue = false; });
     },
@@ -269,6 +349,14 @@ export default {
           this.cumulativePnl = parseFloat(parsed.totalProfit) || 0;
         }
       }).catch(() => {});
+    },
+    getBeijingDateStr() {
+      const now = new Date();
+      const beijing = new Date(now.getTime() + 8 * 60 * 60 * 1000);
+      const y = beijing.getUTCFullYear();
+      const m = String(beijing.getUTCMonth() + 1).padStart(2, '0');
+      const d = String(beijing.getUTCDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
     },
     viewStrategyRatio(row) {
       this.$alert(

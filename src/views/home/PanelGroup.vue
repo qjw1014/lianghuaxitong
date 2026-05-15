@@ -61,7 +61,7 @@
           <div class="card-panel-text">
             7天收益
           </div>
-          <count-to :start-val="0" :end-val="statistics.days7Profit"  :duration="1000" :decimals="4" class="card-panel-num" />
+          <count-to :start-val="0" :end-val="statistics.days7Profit"  :duration="1000" :decimals="4" class="card-panel-num" :style="{color: statistics.days7Profit >= 0 ? '#00A346' : '#C03639'}" />
           <div>
             <span style="color: #00A346" v-if="statistics.days7ProfitFloat>0">{{(statistics.days7ProfitFloat*100).toFixed(2)}}%</span>
             <span style="color: #C03639" v-if="statistics.days7ProfitFloat<0">{{(statistics.days7ProfitFloat*100).toFixed(2)}}%</span>
@@ -79,7 +79,7 @@
           <div class="card-panel-text">
             30天收益
           </div>
-          <count-to :start-val="0" :end-val="statistics.days30Profit"  :duration="1000" :decimals="4" class="card-panel-num" />
+          <count-to :start-val="0" :end-val="statistics.days30Profit"  :duration="1000" :decimals="4" class="card-panel-num" :style="{color: statistics.days30Profit >= 0 ? '#00A346' : '#C03639'}" />
           <div>
             <span style="color: #00A346" v-if="statistics.days30ProfitFloat>0">{{(statistics.days30ProfitFloat*100).toFixed(2)}}%</span>
             <span style="color: #C03639" v-if="statistics.days30ProfitFloat<0">{{(statistics.days30ProfitFloat*100).toFixed(2)}}%</span>
@@ -97,7 +97,7 @@
           <div class="card-panel-text">
             累计收益
           </div>
-          <count-to :start-val="0" :end-val="statistics.totalProfit"  :duration="1000" :decimals="4" class="card-panel-num" />
+          <count-to :start-val="0" :end-val="statistics.totalProfit"  :duration="1000" :decimals="4" class="card-panel-num" :style="{color: statistics.totalProfit >= 0 ? '#00A346' : '#C03639'}" />
           <div>
             <span style="color: #00A346" v-if="statistics.totalProfitFloat>0">{{(statistics.totalProfitFloat*100).toFixed(2)}}%</span>
             <span style="color: #C03639" v-if="statistics.totalProfitFloat<0">{{(statistics.totalProfitFloat*100).toFixed(2)}}%</span>
