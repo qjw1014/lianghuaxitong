@@ -17,6 +17,14 @@ export function getArbStatistics(apiAccountId) {
   })
 }
 
+// 查询套利引擎每日收益（由 stats_server.py 提供，独立于马丁策略）
+export function getArbDailyPnl(apiAccountId) {
+  return request({
+    url: '/arb-daily-pnl/' + apiAccountId,
+    method: 'get'
+  })
+}
+
 // 查询统计账户信息详细
 export function getStatisticsAccount(apiAccountId) {
   return request({

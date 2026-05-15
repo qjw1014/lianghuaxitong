@@ -40,24 +40,32 @@ SIM_STATE_KEY = f"simulate:account:{ACCOUNT_ID}:state"
 def main():
     r = redis_lib.Redis(**REDIS_CONFIG)
 
-    # 1. 读取模拟状态（独立于 Java 引擎）
-    state_str = r.get(SIM_STATE_KEY)
-    if state_str:
-        state = json.loads(state_str)
-        current_net = state["net_value"]
+    # 1. 读取实际账户统计值（优先），确保与真实净值同步
+    arb_stats_str = r.hgetall(f"arb_stats:{ACCOUNT_ID}")
+    if arb_stats_str and "currentUsdt" in arb_stats_str:
+        current_net = float(arb_stats_str["currentUsdt"])
+        init_usdt_val = float(arb_stats_str.get("initUsdt", INIT_USDT))
     else:
-        # 首次运行，从数据库读取初始净值
-        conn = pymysql.connect(**DB_CONFIG)
-        try:
-            with conn.cursor() as cursor:
-                cursor.execute(
-                    "SELECT net_value FROM b_revenue_curve WHERE api_account_id = %s ORDER BY id DESC LIMIT 1",
-                    (ACCOUNT_ID,),
-                )
-                row = cursor.fetchone()
-                current_net = float(row[0]) if row else INIT_USDT
-        finally:
-            conn.close()
+        # 回退到模拟状态
+        state_str = r.get(SIM_STATE_KEY)
+        if state_str:
+            state = json.loads(state_str)
+            current_net = state["net_value"]
+            init_usdt_val = state.get("init_usdt", INIT_USDT)
+        else:
+            # 首次运行，从数据库读取初始净值
+            conn = pymysql.connect(**DB_CONFIG)
+            try:
+                with conn.cursor() as cursor:
+                    cursor.execute(
+                        "SELECT net_value FROM b_revenue_curve WHERE api_account_id = %s ORDER BY id DESC LIMIT 1",
+                        (ACCOUNT_ID,),
+                    )
+                    row = cursor.fetchone()
+                    current_net = float(row[0]) if row else INIT_USDT
+                    init_usdt_val = INIT_USDT
+            finally:
+                conn.close()
 
     # 2. 随机波动
     if random.random() < 0.7:
@@ -72,16 +80,16 @@ def main():
     r.set(SIM_STATE_KEY, json.dumps({"net_value": new_net, "updated_at": datetime.now().isoformat()}))
 
     # 4. 计算统计字段并直接写入 account_detail（让前端立即看到变化）
-    total_profit = round(new_net - INIT_USDT, 8)
+    total_profit = round(new_net - init_usdt_val, 8)
     charge = 0.0
     days7_profit = round(total_profit, 8)
     days30_profit = round(total_profit, 8)
-    days7_float = round(total_profit / INIT_USDT / 7 * 365, 10) if INIT_USDT else 0.0
-    days30_float = round(total_profit / INIT_USDT / 30 * 365, 10) if INIT_USDT else 0.0
-    total_float = round(total_profit / INIT_USDT, 10) if INIT_USDT else 0.0
+    days7_float = round(total_profit / init_usdt_val / 7 * 365, 10) if init_usdt_val else 0.0
+    days30_float = round(total_profit / init_usdt_val / 30 * 365, 10) if init_usdt_val else 0.0
+    total_float = round(total_profit / init_usdt_val, 10) if init_usdt_val else 0.0
 
     stats = {
-        "init_usdt": INIT_USDT,
+        "init_usdt": init_usdt_val,
         "charge": charge,
         "current_usdt": new_net,
         "7days_profit": days7_profit,
@@ -94,6 +102,11 @@ def main():
     r.hset("account_detail", str(ACCOUNT_ID), json.dumps(stats, ensure_ascii=False))
 
     profit = round(new_net - current_net, 8)
+
+    # 6. 累加每日套利收益到独立 Redis key（与马丁策略分开）
+    today = datetime.now().strftime("%Y-%m-%d")
+    r.hincrbyfloat(f"arb_daily_pnl:{ACCOUNT_ID}", today, profit)
+
     print(f"[OK] 净值: {current_net} → {new_net} (Δ{profit:+.2f}) 已写入 Redis")
 
     # 5. 异步写入 MySQL（不影响前端响应速度）

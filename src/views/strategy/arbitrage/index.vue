@@ -204,8 +204,7 @@
 import { listStrategyInfo } from "@/api/strategy/strategyInfo";
 import { updateStrategyInfo } from "@/api/strategy/strategyInfo";
 import { listStrageyPositionByStrategy } from "@/api/strategy/strageyPositionInfo";
-import { listRevenueDetail } from "@/api/strategy/revenueDetail";
-import { getArbStatistics } from "@/api/strategy/statisticsAccount";
+import { getArbStatistics, getArbDailyPnl } from "@/api/strategy/statisticsAccount";
 import { getUserPlatform } from "@/api/strategy/userPlatform";
 import ChargeHistory from "@/views/home/ChargeHistory";
 
@@ -303,42 +302,35 @@ export default {
       getUserPlatform(this.accountId).then(platRes => {
         this.accountAlias = (platRes.data && platRes.data.name) || '未知';
       }).catch(() => {});
-      // 从收益明细按天聚合
-      listRevenueDetail({ apiAccountId: this.accountId, pageNum: 1, pageSize: 9999 }).then(res => {
-        const rows = res.rows || [];
-        const dayMap = {};
-        let prevValue = null;
-        rows.forEach(r => {
-          const date = (r.dataTime || '').substring(0, 10);
-          if (!date) return;
-          const profit = parseFloat(r.profit) || 0;
-          dayMap[date] = (dayMap[date] || 0) + profit;
-        });
-        // 转为数组，按日期倒序
-        const list = Object.keys(dayMap).map(date => ({
-          alias: this.accountAlias,
-          date: date,
-          equity: 0,
-          nav: 0,
-          pnl: parseFloat(dayMap[date].toFixed(2)),
-          yieldPct: 0
-        })).sort((a, b) => b.date.localeCompare(a.date));
-        // 计算累计净值和收益率
-        const initUsdt = this.statsData.initUsdt || 10000;
-        let cumPnl = 0;
-        for (let i = list.length - 1; i >= 0; i--) {
-          cumPnl += list[i].pnl;
-          list[i].equity = parseFloat((initUsdt + cumPnl).toFixed(2));
-          list[i].nav = parseFloat(((initUsdt + cumPnl) / initUsdt).toFixed(4));
+      // 从独立的套利每日收益数据源获取（与马丁策略分开）
+      getArbDailyPnl(this.accountId).then(res => {
+        if (res.code === 200 && res.data) {
+          // 数据已是按日期倒序
+          const raw = res.data || [];
+          const list = raw.map(item => ({
+            alias: this.accountAlias,
+            date: item.date,
+            equity: 0,
+            nav: 0,
+            pnl: parseFloat(item.pnl) || 0,
+            yieldPct: 0
+          }));
+          // 计算累计净值和收益率
+          const initUsdt = this.statsData.initUsdt || 10000;
+          let cumPnl = 0;
+          for (let i = list.length - 1; i >= 0; i--) {
+            cumPnl += list[i].pnl;
+            list[i].equity = parseFloat((initUsdt + cumPnl).toFixed(2));
+            list[i].nav = parseFloat(((initUsdt + cumPnl) / initUsdt).toFixed(4));
+          }
+          for (let i = 0; i < list.length; i++) {
+            const prevEquity = i < list.length - 1 ? list[i + 1].equity : initUsdt;
+            list[i].yieldPct = prevEquity > 0 ? parseFloat(((list[i].equity - prevEquity) / prevEquity * 100).toFixed(2)) : 0;
+          }
+          // 过滤掉当天（北京时间未过0点不显示当天收益）
+          const todayStr = this.getBeijingDateStr();
+          this.revenueList = list.filter(item => item.date !== todayStr);
         }
-        // 计算每日收益率
-        for (let i = 0; i < list.length; i++) {
-          const prevEquity = i < list.length - 1 ? list[i + 1].equity : (this.statsData.initUsdt || 10000);
-          list[i].yieldPct = prevEquity > 0 ? parseFloat(((list[i].equity - prevEquity) / prevEquity * 100).toFixed(2)) : 0;
-        }
-        // 过滤掉当天（北京时间未过0点不显示当天收益）
-        const todayStr = this.getBeijingDateStr();
-        this.revenueList = list.filter(item => item.date !== todayStr);
         this.loadingRevenue = false;
       }).catch(() => { this.loadingRevenue = false; });
     },
