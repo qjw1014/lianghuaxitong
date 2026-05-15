@@ -145,13 +145,6 @@ def main():
                         (ACCOUNT_ID, now, profit, "USDT", now),
                     )
 
-                # 更新 statistics_account
-                cursor.execute(
-                    "UPDATE b_statistics_account SET current_usdt = %s, total_profit = %s, total_profit_float = %s, "
-                    "days7_profit = %s, days7_profit_float = %s, days30_profit = %s, days30_profit_float = %s, charge = %s, update_time = %s "
-                    "WHERE api_account_id = %s",
-                    (new_net, total_profit, total_float, days7_profit, days7_float, days30_profit, days30_float, charge, now, ACCOUNT_ID),
-                )
                 conn.commit()
         finally:
             conn.close()
