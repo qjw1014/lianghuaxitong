@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wallet.strategy.mapper.MartinStrategySettingsMapper">
+    <resultMap type="MartinStrategySettings" id="MartinStrategySettingsResult">
+		        <result property="id"    column="id"    />
+		        <result property="strategyId"    column="strategy_id"    />
+		        <result property="addAmountMultiple"    column="add_amount_multiple"    />
+		        <result property="addPriceRate"    column="add_price_rate"    />
+		        <result property="longStopRate"    column="long_stop_rate"    />
+		        <result property="shortStopRate"    column="short_stop_rate"    />
+		        <result property="lossRate"    column="loss_rate"    />
+		        <result property="createTime"    column="create_time"    />
+		</resultMap>
+	<resultMap id="BOMartinStrategySettingsResult" type="MartinStrategySettingsBO" extends="MartinStrategySettingsResult" />
+	<sql id="Base_Column_List">
+         id, strategy_id, add_amount_multiple, add_price_rate, long_stop_rate, short_stop_rate, loss_rate, create_time    </sql>
+    <delete id="deleteMartinStrategySettingsByIds" parameterType="String">
+        delete from t_martin_strategy_settings where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+	<!--根据策略编号删除-->
+	<delete id="deleteMartinStrategySettingsByStrategyId" parameterType="java.lang.Long">
+		delete from t_martin_strategy_settings where strategy_id =#{strategyId}
+	</delete>
+</mapper>

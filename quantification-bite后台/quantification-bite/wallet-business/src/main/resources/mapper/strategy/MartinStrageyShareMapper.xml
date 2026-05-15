@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wallet.strategy.mapper.MartinStrageyShareMapper">
+    <resultMap type="MartinStrageyShare" id="MartinStrageyShareResult">
+		        <result property="id"    column="id"    />
+		        <result property="accountId"    column="account_id"    />
+		        <result property="currentIncome"    column="current_income"    />
+		        <result property="shareIncome"    column="share_income"    />
+		        <result property="shareRate"    column="share_rate"    />
+		        <result property="createTime"    column="create_time"    />
+		</resultMap>
+	<resultMap id="BOMartinStrageyShareResult" type="MartinStrageyShareBO" extends="MartinStrageyShareResult" />
+	<sql id="Base_Column_List">
+         id, account_id, current_income, share_income, share_rate, create_time    </sql>
+    <delete id="deleteMartinStrageyShareByIds" parameterType="String">
+        delete from t_martin_stragey_share where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+	<!--统计分润收益-->
+	<select id="sumShareIncome" resultType="java.math.BigDecimal">
+		SELECT IFNULL(SUM(share_income),0) FROM `t_martin_stragey_share`
+	</select>
+</mapper>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wallet.strategy.mapper.StatisticsAccountMapper">
+    <resultMap type="StatisticsAccount" id="StatisticsAccountResult">
+		        <result property="apiAccountId"    column="api_account_id"    />
+		        <result property="initUsdt"    column="init_usdt"    />
+		        <result property="charge"    column="charge"    />
+		        <result property="currentUsdt"    column="current_usdt"    />
+		        <result property="days7Profit"    column="days7_profit"    />
+		        <result property="days7ProfitFloat"    column="days7_profit_float"    />
+		        <result property="days30Profit"    column="days30_profit"    />
+		        <result property="days30ProfitFloat"    column="days30_profit_float"    />
+		        <result property="totalProfit"    column="total_profit"    />
+		        <result property="totalProfitFloat"    column="total_profit_float"    />
+		        <result property="updateTime"    column="update_time"    />
+		</resultMap>
+	<resultMap id="BOStatisticsAccountResult" type="StatisticsAccountBO" extends="StatisticsAccountResult" />
+	<sql id="Base_Column_List">
+         api_account_id, init_usdt, charge, current_usdt, days7_profit, days7_profit_float, days30_profit, days30_profit_float, total_profit, total_profit_float, update_time    </sql>
+    <delete id="deleteStatisticsAccountByIds" parameterType="String">
+        delete from b_statistics_account where api_account_id in 
+        <foreach item="apiAccountId" collection="array" open="(" separator="," close=")">
+            #{apiAccountId}
+        </foreach>
+    </delete>
+</mapper>

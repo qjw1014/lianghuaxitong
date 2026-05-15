@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wallet.strategy.mapper.UserPlatformMapper">
+    <resultMap type="UserPlatform" id="UserPlatformResult">
+		        <result property="id"    column="id"    />
+		        <result property="userUuid"    column="user_uuid"    />
+		        <result property="phone"    column="phone"    />
+		        <result property="platformName"    column="platform_name"    />
+		        <result property="name"    column="name"    />
+		        <result property="appkey"    column="appkey"    />
+		        <result property="appsecret"    column="appsecret"    />
+		        <result property="tradePassword"    column="trade_password"    />
+		        <result property="isEnabled"    column="is_enabled"    />
+		        <result property="isDelete"    column="is_delete"    />
+		        <result property="createDate"    column="create_date"    />
+		        <result property="updateDate"    column="update_date"    />
+		        <result property="expirationDate"    column="expiration_date"    />
+		        <result property="syncDate"    column="sync_date"    />
+		        <result property="syncStatus"    column="sync_status"    />
+				<result property="initUsdt"    column="init_usdt"    />
+				<result property="shareRate"    column="share_rate"    />
+		</resultMap>
+	<resultMap id="BOUserPlatformResult" type="UserPlatformBO" extends="UserPlatformResult" />
+	<sql id="Base_Column_List">
+         id, user_uuid, phone, platform_name, name, appkey, appsecret, trade_password, is_enabled, is_delete, create_date, update_date, expiration_date, sync_date, sync_status,init_usdt,share_rate    </sql>
+    <delete id="deleteUserPlatformByIds" parameterType="String">
+        delete from t_user_platform where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+
+	<insert id="insertUserPlatform" parameterType="com.wallet.strategy.domain.UserPlatform" useGeneratedKeys="true" keyProperty="id">
+		insert into t_user_platform(
+		<if test="userUuid != null and userUuid != ''">user_uuid,</if>
+		<if test="phone != null and phone != ''">phone,</if>
+		<if test="platformName != null and platformName != ''">platform_name,</if>
+		<if test="name != null and name != ''">name,</if>
+		<if test="appkey != null and appkey != ''">appkey,</if>
+		<if test="appsecret != null and appsecret != ''">appsecret,</if>
+		<if test="tradePassword != null and tradePassword != ''">trade_password,</if>
+		<if test="isEnabled != null and isEnabled != ''">is_enabled,</if>
+		<if test="isDelete != null and isDelete != ''">is_delete,</if>
+		<if test="createDate != null">create_date,</if>
+		<if test="updateDate != null">update_date,</if>
+		<if test="expirationDate != null">expiration_date,</if>
+		<if test="syncDate != null">sync_date,</if>
+		<if test="syncStatus != null and syncStatus != ''">sync_status,</if>
+		<if test="initUsdt != null">init_usdt</if>
+		)values(
+		<if test="userUuid != null and userUuid != ''">#{userUuid},</if>
+		<if test="phone != null and phone != ''">#{phone},</if>
+		<if test="platformName != null and platformName != ''">#{platformName},</if>
+		<if test="name != null and name != ''">#{name},</if>
+		<if test="appkey != null and appkey != ''">#{appkey},</if>
+		<if test="appsecret != null and appsecret != ''">#{appsecret},</if>
+		<if test="tradePassword != null and tradePassword != ''">#{tradePassword},</if>
+		<if test="isEnabled != null and isEnabled != ''">#{isEnabled},</if>
+		<if test="isDelete != null and isDelete != ''">#{isDelete},</if>
+		<if test="createDate != null">#{createDate},</if>
+		<if test="updateDate != null">#{updateDate},</if>
+		<if test="expirationDate != null">#{expirationDate},</if>
+		<if test="syncDate != null">#{syncDate},</if>
+		<if test="syncStatus != null">#{syncStatus},</if>
+		<if test="initUsdt != null">#{initUsdt}</if>
+		)
+	</insert>
+</mapper>

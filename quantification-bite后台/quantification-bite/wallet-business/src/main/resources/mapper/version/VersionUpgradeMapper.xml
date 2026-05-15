@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wallet.version.mapper.VersionUpgradeMapper">
+    <resultMap type="VersionUpgrade" id="VersionUpgradeResult">
+		        <result property="id"    column="id"    />
+		        <result property="appId"    column="app_id"    />
+		        <result property="versionId"    column="version_id"    />
+		        <result property="versionMini"    column="version_mini"    />
+		        <result property="versionCode"    column="version_code"    />
+		        <result property="type"    column="type"    />
+		        <result property="appUrl"    column="app_url"    />
+		        <result property="upgradePoint"    column="upgrade_point"    />
+		        <result property="dataStatus"    column="data_status"    />
+				<result property="latestVersion"    column="latest_version"    />
+				<result property="reviewingVersion"    column="reviewing_version"    />
+		        <result property="createTime"    column="create_time"    />
+		        <result property="updateTime"    column="update_time"    />
+		</resultMap>
+	<resultMap id="BOVersionUpgradeResult" type="VersionUpgradeBO" extends="VersionUpgradeResult" />
+	<sql id="Base_Column_List">
+         id, app_id, version_id, version_mini, version_code, type,latest_version,reviewing_version, app_url, upgrade_point, data_status, create_time, update_time    </sql>
+    <delete id="deleteVersionUpgradeByIds" parameterType="String">
+        delete from w_version_upgrade where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

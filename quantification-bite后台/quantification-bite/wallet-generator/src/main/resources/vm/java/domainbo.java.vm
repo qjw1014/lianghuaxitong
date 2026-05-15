@@ -1,0 +1,17 @@
+package ${packageName}.${moduleName}.domain.bo;
+
+
+import ${packageName}.${moduleName}.domain.${ClassName};
+
+
+/**
+ * ${functionName}对象 ${tableName}BO
+ * 
+ * @author ${author}
+ * @date ${datetime}
+ */
+
+public class ${ClassName}BO extends ${ClassName}
+{
+    
+}

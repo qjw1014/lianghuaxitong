@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wallet.sysDict.mapper.WalletConfigMapper">
+    <resultMap type="WalletConfig" id="WalletConfigResult">
+		        <result property="id"    column="id"    />
+		        <result property="code"    column="code"    />
+		        <result property="type"    column="type"    />
+		        <result property="address"    column="address"    />
+		        <result property="contractAddress"    column="contract_address"    />
+		        <result property="privateKey"    column="private_key"    />
+		        <result property="encryKey"    column="encry_key"    />
+		        <result property="tips"    column="tips"    />
+		        <result property="sort"    column="sort"    />
+		        <result property="updateTime"    column="update_time"    />
+		</resultMap>
+	<resultMap id="BOWalletConfigResult" type="WalletConfigBO" extends="WalletConfigResult" />
+	<sql id="Base_Column_List">
+         id, code, type, address, contract_address, private_key, encry_key, tips, sort, update_time    </sql>
+    <delete id="deleteWalletConfigByIds" parameterType="String">
+        delete from w_wallet_config where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

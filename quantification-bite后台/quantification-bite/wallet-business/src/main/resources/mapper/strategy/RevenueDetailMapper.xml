@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wallet.strategy.mapper.RevenueDetailMapper">
+    <resultMap type="RevenueDetail" id="RevenueDetailResult">
+		        <result property="id"    column="id"    />
+		        <result property="apiAccountId"    column="api_account_id"    />
+		        <result property="dateTime"    column="date_time"    />
+		        <result property="profit"    column="profit"    />
+		        <result property="profitCoin"    column="profit_coin"    />
+		        <result property="createTime"    column="create_time"    />
+		</resultMap>
+	<resultMap id="BORevenueDetailResult" type="RevenueDetailBO" extends="RevenueDetailResult" />
+	<sql id="Base_Column_List">
+         id, api_account_id, date_time, profit, profit_coin, create_time    </sql>
+    <delete id="deleteRevenueDetailByIds" parameterType="String">
+        delete from b_revenue_detail where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+	<select id="selectRevenueDetailByAccountIdAndDateTime" resultType="com.wallet.strategy.domain.RevenueDetail">
+		SELECT <include refid="Base_Column_List"/>
+		FROM b_revenue_detail
+		WHERE api_account_id=#{apiAccountId} and date_time=#{dateTime}
+	</select>
+
+</mapper>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wallet.strategy.mapper.MartinStrategyOrderMapper">
+    <resultMap type="MartinStrategyOrder" id="MartinStrategyOrderResult">
+		        <result property="serialId"    column="serial_id"    />
+		        <result property="symbol"    column="symbol"    />
+		        <result property="id"    column="id"    />
+		        <result property="orderId"    column="order_id"    />
+		        <result property="side"    column="side"    />
+		        <result property="price"    column="price"    />
+		        <result property="qty"    column="qty"    />
+		        <result property="realizedPnl"    column="realized_pnl"    />
+		        <result property="marginAsset"    column="margin_asset"    />
+		        <result property="quoteQty"    column="quote_qty"    />
+		        <result property="commission"    column="commission"    />
+		        <result property="commissionAsset"    column="commission_asset"    />
+		        <result property="orderTime"    column="order_time"    />
+		        <result property="positionSide"    column="position_side"    />
+		        <result property="buyer"    column="buyer"    />
+		        <result property="maker"    column="maker"    />
+		        <result property="accountId"    column="account_id"    />
+		        <result property="isSettled"    column="is_settled"    />
+		</resultMap>
+	<resultMap id="BOMartinStrategyOrderResult" type="MartinStrategyOrderBO" extends="MartinStrategyOrderResult" />
+	<sql id="Base_Column_List">
+         serial_id, symbol, id, order_id, side, price, qty, realized_pnl, margin_asset, quote_qty, commission, commission_asset, order_time, position_side, buyer, maker, account_id, is_settled    </sql>
+    <delete id="deleteMartinStrategyOrderByIds" parameterType="String">
+        delete from t_martin_strategy_order where serial_id in 
+        <foreach item="serialId" collection="array" open="(" separator="," close=")">
+            #{serialId}
+        </foreach>
+    </delete>
+
+	<select id="findOrderTotalIncome" parameterType="com.wallet.strategy.domain.MartinStrategyOrder" resultType="java.math.BigDecimal">
+		SELECT ifnull(sum(realized_pnl-commission),0) from `t_martin_strategy_order`
+		<where>
+			<if test="accountId!=null">
+				AND account_id =#{accountId}
+			</if>
+			<if test="isSettled!=null and isSettled!=''">
+				AND is_settled =#{isSettled}
+			</if>
+		</where>
+	</select>
+
+	<update id="deterShare" parameterType="java.lang.Long">
+		update `t_martin_strategy_order` set is_settled='Y' where account_id=#{accountId}
+	</update>
+</mapper>

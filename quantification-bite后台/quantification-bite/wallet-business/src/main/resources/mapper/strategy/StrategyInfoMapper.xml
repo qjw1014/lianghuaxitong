@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wallet.strategy.mapper.StrategyInfoMapper">
+    <resultMap type="StrategyInfo" id="StrategyInfoResult">
+		        <result property="strategyId"    column="strategy_id"    />
+		        <result property="strategyStatus"    column="strategy_status"    />
+		        <result property="userUuid"    column="user_uuid"    />
+		        <result property="exchange"    column="exchange"    />
+		        <result property="apiAccountId"    column="api_account_id"    />
+		        <result property="symbol"    column="symbol"    />
+		        <result property="createTime"    column="create_time"    />
+		        <result property="updateTime"    column="update_time"    />
+		        <result property="coin"    column="coin"    />
+		        <result property="buyer"    column="buyer"    />
+		        <result property="seller"    column="seller"    />
+		        <result property="value"    column="value"    />
+		        <result property="everyAmount"    column="every_amount"    />
+		        <result property="totalAmount"    column="total_amount"    />
+		        <result property="tradeCount"    column="trade_count"    />
+		        <result property="isMaker"    column="is_maker"    />
+		        <result property="leverage"    column="leverage"    />
+		        <result property="initUsdt"    column="init_usdt"    />
+		        <result property="everyVolume"    column="every_volume"    />
+		        <result property="symbol1"    column="symbol_1"    />
+		        <result property="symbol2"    column="symbol_2"    />
+		        <result property="amountDecimal1"    column="amount_decimal_1"    />
+		        <result property="amountDecimal2"    column="amount_decimal_2"    />
+		        <result property="priceDecimal1"    column="price_decimal_1"    />
+		        <result property="priceDecimal2"    column="price_decimal_2"    />
+		        <result property="isCloseAll"    column="is_close_all"    />
+		        <result property="klinePeriod"    column="kline_period"    />
+		        <result property="initLine"    column="init_line"    />
+		        <result property="gridGap"    column="grid_gap"    />
+		        <result property="lowLimitPrice"    column="low_limit_price"    />
+		        <result property="highLimitPrice"    column="high_limit_price"    />
+		        <result property="detailInfo"    column="detail_info"    />
+				<result property="strategyType"    column="strategy_type"    />
+				<result property="action"    column="action"    />
+				<result property="isDelete"    column="is_delete"    />
+		</resultMap>
+	<resultMap id="BOStrategyInfoResult" type="StrategyInfoBO" extends="StrategyInfoResult" />
+	<sql id="Base_Column_List">
+         strategy_id, strategy_status, user_uuid, exchange, api_account_id, symbol, create_time, update_time, coin, buyer, seller, `value`, every_amount, total_amount, trade_count, is_maker, leverage, init_usdt, every_volume, symbol_1, symbol_2, amount_decimal_1, amount_decimal_2, price_decimal_1, price_decimal_2, is_close_all, kline_period, init_line, grid_gap, low_limit_price, high_limit_price, detail_info,strategy_type,`action`,is_delete   </sql>
+    <delete id="deleteStrategyInfoByIds" parameterType="String">
+        delete from b_strategy_info where strategy_id in 
+        <foreach item="strategyId" collection="array" open="(" separator="," close=")">
+            #{strategyId}
+        </foreach>
+    </delete>
+</mapper>

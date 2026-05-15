@@ -1,0 +1,52 @@
+package ${packageName}.${moduleName}.mapper;
+
+import java.util.List;
+import ${packageName}.${moduleName}.domain.${ClassName};
+#if($table.sub)
+import ${packageName}.${moduleName}.domain.${subClassName};
+#end
+import tk.mybatis.mapper.common.Mapper;
+/**
+ * ${functionName}Mapper接口
+ * 
+ * @author ${author}
+ * @date ${datetime}
+ */
+public interface ${ClassName}Mapper extends Mapper<${ClassName}>
+{
+    
+    /**
+     * 批量删除${functionName}
+     * 
+     * @param ${pkColumn.javaField}s 需要删除的数据ID
+     * @return 结果
+     */
+    public int delete${ClassName}ByIds(${pkColumn.javaType}[] ${pkColumn.javaField}s);
+#if($table.sub)
+
+    /**
+     * 批量删除${subTable.functionName}
+     * 
+     * @param customerIds 需要删除的数据ID
+     * @return 结果
+     */
+    public int delete${subClassName}By${subTableFkClassName}s(${pkColumn.javaType}[] ${pkColumn.javaField}s);
+    
+    /**
+     * 批量新增${subTable.functionName}
+     * 
+     * @param ${subclassName}List ${subTable.functionName}列表
+     * @return 结果
+     */
+    public int batch${subClassName}(List<${subClassName}> ${subclassName}List);
+    
+
+    /**
+     * 通过${functionName}ID删除${subTable.functionName}信息
+     * 
+     * @param roleId 角色ID
+     * @return 结果
+     */
+    public int delete${subClassName}By${subTableFkClassName}(${pkColumn.javaType} ${pkColumn.javaField});
+#end
+}

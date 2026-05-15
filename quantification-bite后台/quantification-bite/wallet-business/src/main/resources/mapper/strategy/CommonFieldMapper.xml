@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wallet.strategy.mapper.CommonFieldMapper">
+    <resultMap type="CommonField" id="CommonFieldResult">
+		        <result property="id"    column="id"    />
+		        <result property="name"    column="name"    />
+		        <result property="showName"    column="show_name"    />
+		        <result property="remarks"    column="remarks"    />
+		        <result property="isEnabled"    column="is_enabled"    />
+		        <result property="createTime"    column="create_time"    />
+		</resultMap>
+	<resultMap id="BOCommonFieldResult" type="CommonFieldBO" extends="CommonFieldResult" />
+	<sql id="Base_Column_List">
+         id, name, show_name, remarks, is_enabled, create_time    </sql>
+    <delete id="deleteCommonFieldByIds" parameterType="String">
+        delete from b_common_field where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

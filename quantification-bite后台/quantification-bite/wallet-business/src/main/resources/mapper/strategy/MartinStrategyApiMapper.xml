@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wallet.strategy.mapper.MartinStrategyApiMapper">
+    <resultMap type="MartinStrategyApi" id="MartinStrategyApiResult">
+		        <result property="id"    column="id"    />
+		        <result property="strategyStatus"    column="strategy_status"    />
+		        <result property="strategyType"    column="strategy_type"    />
+		        <result property="accountId"    column="account_id"    />
+		        <result property="baseRate"    column="base_rate"    />
+		        <result property="crateTime"    column="crate_time"    />
+				<result property="strategyId"    column="strategy_id"    />
+				<result property="isDelete"    column="is_delete"    />
+		</resultMap>
+	<resultMap id="BOMartinStrategyApiResult" type="MartinStrategyApiBO" extends="MartinStrategyApiResult" />
+	<sql id="Base_Column_List">
+         id, strategy_status, strategy_type, account_id, base_rate, crate_time,strategy_id,is_delete    </sql>
+    <delete id="deleteMartinStrategyApiByIds" parameterType="String">
+        delete from t_martin_strategy_api where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wallet.sysDict.mapper.AuFeeMapper">
+    <resultMap type="AuFee" id="AuFeeResult">
+		        <result property="id"    column="id"    />
+		        <result property="feeType"    column="fee_type"    />
+		        <result property="type"    column="type"    />
+		        <result property="fee"    column="fee"    />
+		        <result property="minNums"    column="min_nums"    />
+		        <result property="maxNums"    column="max_nums"    />
+		        <result property="createTime"    column="create_time"    />
+		        <result property="updateTime"    column="update_time"    />
+		</resultMap>
+	<resultMap id="BOAuFeeResult" type="AuFeeBO" extends="AuFeeResult" />
+	<sql id="Base_Column_List">
+         id, fee_type, type, fee, min_nums, max_nums, create_time, update_time    </sql>
+    <delete id="deleteAuFeeByIds" parameterType="String">
+        delete from w_au_fee where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

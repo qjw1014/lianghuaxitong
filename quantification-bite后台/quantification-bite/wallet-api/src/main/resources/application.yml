@@ -1,0 +1,75 @@
+
+# Spring配置
+spring:
+  profiles: 
+    active: '@package.environment@'
+  # 文件上传
+  servlet:
+     multipart:
+       # 单个文件大小
+       max-file-size:  100MB
+       # 设置总上传的文件大小
+       max-request-size:  200MB
+  # 服务模块
+
+  devtools:
+    restart:
+      # 热部署开关
+      enabled: true
+  
+# MyBatis配置
+mybatis:
+    # 搜索指定包别名
+    typeAliasesPackage: com.wallet.**.domain
+    # 配置mapper的扫描，找到所有的mapper.xml映射文件
+    mapperLocations: classpath*:mapper/**/*Mapper.xml
+    # 加载全局的配置文件
+    configLocation: classpath:mybatis/mybatis-config.xml
+
+# PageHelper分页插件
+pagehelper: 
+  helperDialect: mysql
+  reasonable: false
+  supportMethodsArguments: true
+  params: count=countSql 
+# Swagger配置
+swagger:
+  # 是否开启swagger
+  enabled: true
+  # 请求前缀
+  pathMapping: /
+
+wechat:
+  miniapp:
+    configs:
+        - appid: wx8064d0a65feb0e18
+          secret: 13ed0a634d702be48d9059e0189d6a91
+          token: roBM8nPXxacOIakGUjFTFvBQpinxGmgc
+          aesKey: oKcmPM4Y6cbwjzcazht9PkQN8ewvSr1KToeyWLyuEiB
+          msgDataFormat: JSON
+          mchID: 1612225399
+          key: KiiCoY5ADqMYJMIn6RLsot5LJtKANf0P
+          notifyUrl: http://api.ymdfbaby.com/hosApi/notify/smallRoutineNotify
+sysproperties:
+  # 名称
+  fileAbsUrl: http://wallet.weirui0755.com/img
+  # 版本
+  fileAbsRoot: /usr/local/nginx/www/wallet
+chain:
+  data:
+    eth-url: https://eth.tokenview.com/api/eth/address/normal
+    eth-contract-url: https://eth.tokenview.com/api/eth/address/normal
+    trx-url: https://apilist.tronscan.org/api/transfer
+    trx-contract-url: https://apilist.tronscan.org/api/token_trc20/transfers
+    eth-select-contract: https://ethplorer.io/service/service.php?page=1&pageSize=1000&search=
+    eth-etherscan-url: http://api.etherscan.io/api?module=account&action=txlist&sort=desc&apikey=V7XE7QPAM3N8BJHGWJ2ZBK5S9W7XA9WPHR
+    eth-etherscan-contract-url: http://api.etherscan.io/api?module=account&action=tokentx&sort=desc&apikey=V7XE7QPAM3N8BJHGWJ2ZBK5S9W7XA9WPHR
+
+  balance:  
+    trx-balance: https://apiasia.tronscan.io:5566/api/account/tokens?limit=100
+    eth-balance: https://ethplorer.io/service/service.php?data=
+
+trx:
+  #节点地址
+  node:
+    address: https://api.trongrid.io

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wallet.strategy.mapper.ChargeHistoryMapper">
+    <resultMap type="ChargeHistory" id="ChargeHistoryResult">
+		        <result property="id"    column="id"    />
+		        <result property="apiAccountId"    column="api_account_id"    />
+		        <result property="createTime"    column="create_time"    />
+		        <result property="actionType"    column="action_type"    />
+		        <result property="amount"    column="amount"    />
+		        <result property="coin"    column="coin"    />
+		</resultMap>
+	<resultMap id="BOChargeHistoryResult" type="ChargeHistoryBO" extends="ChargeHistoryResult" />
+	<sql id="Base_Column_List">
+         id, api_account_id, create_time, action_type, amount, coin    </sql>
+    <delete id="deleteChargeHistoryByIds" parameterType="String">
+        delete from b_charge_history where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

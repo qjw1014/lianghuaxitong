@@ -1,0 +1,45 @@
+package ${packageName}.${moduleName}.domain.vo;
+
+
+import ${packageName}.${moduleName}.domain.${ClassName};
+import com.alibaba.fastjson.annotation.JSONField;
+
+/**
+ * ${functionName}对象 ${tableName}VO
+ * 
+ * @author ${author}
+ * @date ${datetime}
+ */
+#set($Entity="${ClassName}")
+public class ${ClassName}VO  extends ${ClassName}
+{
+    /** 开始时间 */
+    @JSONField(serialize = false)
+    // @JsonIgnore
+    private String beginTime;
+    
+    /** 结束时间 */
+    @JSONField(serialize = false)
+    // @JsonIgnore
+    private String endTime;
+    
+    public String getBeginTime()
+    {
+        return beginTime;
+    }
+    
+    public void setBeginTime(String beginTime)
+    {
+        this.beginTime = beginTime;
+    }
+    
+    public String getEndTime()
+    {
+        return endTime;
+    }
+    
+    public void setEndTime(String endTime)
+    {
+        this.endTime = endTime;
+    }
+}

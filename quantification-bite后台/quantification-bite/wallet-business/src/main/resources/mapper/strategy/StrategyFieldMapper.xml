@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wallet.strategy.mapper.StrategyFieldMapper">
+    <resultMap type="StrategyField" id="StrategyFieldResult">
+		        <result property="id"    column="id"    />
+		        <result property="field"    column="field"    />
+		        <result property="strategyTypeId"    column="strategy_type_id"    />
+		</resultMap>
+	<resultMap id="BOStrategyFieldResult" type="StrategyFieldBO" extends="StrategyFieldResult" />
+	<sql id="Base_Column_List">
+         id, field, strategy_type_id    </sql>
+    <delete id="deleteStrategyFieldByIds" parameterType="String">
+        delete from b_strategy_field where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

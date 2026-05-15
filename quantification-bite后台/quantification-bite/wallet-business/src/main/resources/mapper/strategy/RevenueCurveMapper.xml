@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wallet.strategy.mapper.RevenueCurveMapper">
+    <resultMap type="RevenueCurve" id="RevenueCurveResult">
+		        <result property="id"    column="id"    />
+		        <result property="apiAccountId"    column="api_account_id"    />
+		        <result property="dateTime"    column="date_time"    />
+		        <result property="netValue"    column="net_value"    />
+		        <result property="createTime"    column="create_time"    />
+		</resultMap>
+	<resultMap id="BORevenueCurveResult" type="RevenueCurveBO" extends="RevenueCurveResult" />
+	<sql id="Base_Column_List">
+         id, api_account_id, date_time, net_value, create_time    </sql>
+    <delete id="deleteRevenueCurveByIds" parameterType="String">
+        delete from b_revenue_curve where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <select id="selectAccountIdAndDateTime" resultType="com.wallet.strategy.domain.RevenueCurve">
+        SELECT <include refid="Base_Column_List"/>
+        FROM b_revenue_curve
+        WHERE api_account_id=#{apiAccountId} and date_time=#{dateTime}
+    </select>
+
+</mapper>

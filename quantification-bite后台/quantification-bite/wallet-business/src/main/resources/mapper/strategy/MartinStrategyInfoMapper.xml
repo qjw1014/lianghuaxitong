@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wallet.strategy.mapper.MartinStrategyInfoMapper">
+    <resultMap type="MartinStrategyInfo" id="MartinStrategyInfoResult">
+		        <result property="strategyId"    column="strategy_id"    />
+		        <result property="strategyStatus"    column="strategy_status"    />
+		        <result property="userUuid"    column="user_uuid"    />
+		        <result property="platform"    column="platform"    />
+		        <result property="symbol"    column="symbol"    />
+		        <result property="apiAccountId"    column="api_account_id"    />
+		        <result property="coin"    column="coin"    />
+		        <result property="leverage"    column="leverage"    />
+		        <result property="longOpen"    column="long_open"    />
+		        <result property="longCount"    column="long_count"    />
+		        <result property="shortOpen"    column="short_open"    />
+		        <result property="shortCount"    column="short_count"    />
+		        <result property="common"    column="common"    />
+		        <result property="sellLongRate"    column="sell_long_rate"    />
+		        <result property="buyShortRate"    column="buy_short_rate"    />
+		        <result property="buyLongRate"    column="buy_long_rate"    />
+		        <result property="sellShortRate"    column="sell_short_rate"    />
+		        <result property="crateTime"    column="crate_time"    />
+		        <result property="updateTime"    column="update_time"    />
+		        <result property="stopTime"    column="stop_time"    />
+		        <result property="isDelete"    column="is_delete"    />
+		        <result property="allProfit"    column="all_profit"    />
+		        <result property="deductProfit"    column="deduct_profit"    />
+		        <result property="weekProfit"    column="week_profit"    />
+		        <result property="weekProfitRate"    column="week_profit_rate"    />
+		        <result property="shareProfit"    column="share_profit"    />
+		        <result property="strategyType"    column="strategy_type"    />
+		</resultMap>
+	<resultMap id="BOMartinStrategyInfoResult" type="MartinStrategyInfoBO" extends="MartinStrategyInfoResult" />
+	<sql id="Base_Column_List">
+         strategy_id, strategy_status, user_uuid, platform, symbol, api_account_id, coin, leverage, long_open, long_count, short_open, short_count, common, sell_long_rate, buy_short_rate, buy_long_rate, sell_short_rate, crate_time, update_time, stop_time, is_delete, all_profit, deduct_profit, week_profit, week_profit_rate, share_profit, strategy_type    </sql>
+    <delete id="deleteMartinStrategyInfoByIds" parameterType="String">
+        delete from t_martin_strategy_info where strategy_id in 
+        <foreach item="strategyId" collection="array" open="(" separator="," close=")">
+            #{strategyId}
+        </foreach>
+    </delete>
+
+</mapper>

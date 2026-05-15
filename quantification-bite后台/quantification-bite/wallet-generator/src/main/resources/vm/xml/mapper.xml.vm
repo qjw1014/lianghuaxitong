@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="${packageName}.${moduleName}.mapper.${ClassName}Mapper">
+    <resultMap type="${ClassName}" id="${ClassName}Result">
+	#foreach ($column in $columns)
+	        <result property="${column.javaField}"    column="${column.columnName}"    />
+	#end
+	</resultMap>
+	<resultMap id="BO${ClassName}Result" type="${ClassName}BO" extends="${ClassName}Result" />
+	<sql id="Base_Column_List">
+        #foreach($column in $columns) $column.columnName#if($velocityCount != $columns.size()),#end#end 
+    </sql>
+    <delete id="delete${ClassName}ByIds" parameterType="String">
+        delete from ${tableName} where ${pkColumn.columnName} in 
+        <foreach item="${pkColumn.javaField}" collection="array" open="(" separator="," close=")">
+            #{${pkColumn.javaField}}
+        </foreach>
+    </delete>
+#if($table.sub)
+    
+    <delete id="delete${subClassName}By${subTableFkClassName}s" parameterType="String">
+        delete from ${subTableName} where ${subTableFkName} in 
+        <foreach item="${subTableFkclassName}" collection="array" open="(" separator="," close=")">
+            #{${subTableFkclassName}}
+        </foreach>
+    </delete>
+
+    <delete id="delete${subClassName}By${subTableFkClassName}" parameterType="Long">
+        delete from ${subTableName} where ${subTableFkName} = #{${subTableFkclassName}}
+    </delete>
+
+    <insert id="batch${subClassName}">
+        insert into ${subTableName}(#foreach($column in $subTable.columns) $column.columnName#if($velocityCount != $subTable.columns.size()),#end#end) values
+		<foreach item="item" index="index" collection="list" separator=",">
+            (#foreach($column in $subTable.columns) #{item.$column.javaField}#if($velocityCount != $subTable.columns.size()),#end#end)
+        </foreach>
+    </insert>
+#end
+</mapper>

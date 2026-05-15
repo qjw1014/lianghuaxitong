@@ -1,0 +1,56 @@
+package com.wallet.strategy.service.impl.binance;
+
+import com.wallet.strategy.service.impl.binance.domain.TimeInForce;
+import com.wallet.strategy.service.impl.binance.domain.account.NewOrderResponse;
+import com.wallet.strategy.service.impl.binance.domain.account.NewOrderResponseType;
+import com.wallet.strategy.service.impl.binance.domain.account.Order;
+import com.wallet.strategy.service.impl.binance.domain.account.request.*;
+import com.wallet.strategy.service.impl.binance.exception.BinanceApiException;
+
+import java.util.List;
+
+import static com.wallet.strategy.service.impl.binance.domain.account.NewOrder.limitBuy;
+import static com.wallet.strategy.service.impl.binance.domain.account.NewOrder.marketBuy;
+
+/**
+ * Examples on how to place orders, cancel them, and query account information.
+ */
+public class OrdersExample {
+
+  public static void main(String[] args) {
+    BinanceApiClientFactory factory = BinanceApiClientFactory.newInstance("EpvkKHyUwq8lQ94Midt9hQzDWlAeI9PcAwKWyLdKIbPhjAOietk1vZsXlpTpY9n0", "1cVPC4NJcS7LMdXt1SHFOR0ixKtMxkJltNyfODijl9x8hgupaqBf0w8qcYgxEdAl");
+    BinanceApiRestClient client = factory.newRestClient();
+    NewOrderResponse newOrderResponse = client.newOrder(limitBuy("LINKETH", TimeInForce.GTC, "1000", "0.0001").newOrderRespType(NewOrderResponseType.FULL));
+    System.out.println(newOrderResponse);
+    // Getting list of open orders
+    List<Order> openOrders = client.getOpenOrders(new OrderRequest("LINKETH"));
+    System.out.println(openOrders);
+
+    // Getting list of all orders with a limit of 10
+    List<Order> allOrders = client.getAllOrders(new AllOrdersRequest("LINKETH").limit(10));
+    System.out.println(allOrders);
+
+    // Get status of a particular order
+    Order order = client.getOrderStatus(new OrderStatusRequest("LINKETH", 751698L));
+    System.out.println(order);
+
+    // Canceling an order
+    try {
+      CancelOrderResponse cancelOrderResponse = client.cancelOrder(new CancelOrderRequest("LINKETH", 756762l));
+      System.out.println(cancelOrderResponse);
+    } catch (BinanceApiException e) {
+      System.out.println(e.getError().getMsg());
+    }
+
+    // Placing a test LIMIT order
+    client.newOrderTest(limitBuy("LINKETH", TimeInForce.GTC, "1000", "0.0001"));
+
+    // Placing a test MARKET order
+    client.newOrderTest(marketBuy("LINKETH", "1000"));
+
+    // Placing a real LIMIT order
+    /*NewOrderResponse newOrderResponse = client.newOrder(limitBuy("LINKETH", TimeInForce.GTC, "1000", "0.0001").newOrderRespType(NewOrderResponseType.FULL));
+    System.out.println(newOrderResponse);*/
+  }
+
+}
