@@ -103,9 +103,23 @@ def main():
 
     profit = round(new_net - current_net, 8)
 
-    # 6. 累加每日套利收益到独立 Redis key（与马丁策略分开）
+    # 6. 每日套利收益跟踪（基于当日净值变化，而非累加随机波动）
+    #   确保与马丁策略收益数据独立
     today = datetime.now().strftime("%Y-%m-%d")
-    r.hincrbyfloat(f"arb_daily_pnl:{ACCOUNT_ID}", today, profit)
+    day_key = f"arb_daily_current_day:{ACCOUNT_ID}"
+    snapshot_key = f"arb_daily_init:{ACCOUNT_ID}"
+
+    current_day = r.get(day_key)
+    if current_day != today:
+        # 新的一天，记录当前净值为当日起始值
+        r.set(snapshot_key, str(current_net))
+        r.set(day_key, today)
+
+    start_value = float(r.get(snapshot_key) or new_net)
+    daily_pnl = round(new_net - start_value, 8)
+
+    # 覆盖写入当日收益（不累加），确保每日数据独立准确
+    r.hset(f"arb_daily_pnl:{ACCOUNT_ID}", today, str(daily_pnl))
 
     print(f"[OK] 净值: {current_net} → {new_net} (Δ{profit:+.2f}) 已写入 Redis")
 
